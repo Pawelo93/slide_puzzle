@@ -4,8 +4,8 @@ version: 1.0.0+1
 publish_to: none
 
 environment:
-  sdk: ">=2.13.0 <3.0.0"
-  flutter: 2.8.0
+  sdk: ">=2.14.0 <3.0.0"
+  flutter: 2.10.1
 
 dependencies:
   bloc: ^8.0.1
@@ -22,6 +22,7 @@ dependencies:
   just_audio: ^0.9.18
   universal_platform: ^1.0.0+1
   url_launcher: ^6.0.17
+  widget_mask: ^1.0.0
 
 dev_dependencies:
   bloc_test: ^9.0.1
@@ -34,6 +35,7 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
+    - assets/
     - assets/audio/
     - assets/images/
     - assets/images/audio_control/

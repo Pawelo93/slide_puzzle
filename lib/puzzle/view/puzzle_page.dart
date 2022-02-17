@@ -3,14 +3,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:very_good_slide_puzzle/audio_control/audio_control.dart';
 import 'package:very_good_slide_puzzle/dashatar/dashatar.dart';
+import 'package:very_good_slide_puzzle/helpers.dart';
 import 'package:very_good_slide_puzzle/l10n/l10n.dart';
 import 'package:very_good_slide_puzzle/layout/layout.dart';
 import 'package:very_good_slide_puzzle/models/models.dart';
 import 'package:very_good_slide_puzzle/puzzle/puzzle.dart';
 import 'package:very_good_slide_puzzle/simple/simple.dart';
+import 'package:very_good_slide_puzzle/sky/resource_bundle.dart';
+import 'package:very_good_slide_puzzle/sky/sky_theme.dart';
 import 'package:very_good_slide_puzzle/theme/theme.dart';
 import 'package:very_good_slide_puzzle/timer/timer.dart';
 import 'package:very_good_slide_puzzle/typography/typography.dart';
+import 'dart:ui' as ui;
 
 /// {@template puzzle_page}
 /// The root page of the puzzle UI.
@@ -24,41 +28,60 @@ class PuzzlePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) => DashatarThemeBloc(
-            themes: const [
-              BlueDashatarTheme(),
-              GreenDashatarTheme(),
-              YellowDashatarTheme()
+    return FutureBuilder<List<ui.Image>>(
+      future: Future.wait([loadImage('assets/background.png')]),
+      builder: (context, data) {
+        if (data.hasData) {
+          final background = data.data![0];
+          final resourceBundle = ResourceBundle(background);
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (_) =>
+                    DashatarThemeBloc(
+                      themes: const [
+                        BlueDashatarTheme(),
+                        GreenDashatarTheme(),
+                        YellowDashatarTheme()
+                      ],
+                    ),
+              ),
+              BlocProvider(
+                create: (_) =>
+                    DashatarPuzzleBloc(
+                      secondsToBegin: 3,
+                      ticker: const Ticker(),
+                    ),
+              ),
+              BlocProvider(
+                create: (context) =>
+                    ThemeBloc(
+                      initialThemes: [
+                        SkyTheme(resourceBundle),
+                        const SimpleTheme(),
+                        context
+                            .read<DashatarThemeBloc>()
+                            .state
+                            .theme,
+                      ],
+                    ),
+              ),
+              BlocProvider(
+                create: (_) =>
+                    TimerBloc(
+                      ticker: const Ticker(),
+                    ),
+              ),
+              BlocProvider(
+                create: (_) => AudioControlBloc(),
+              ),
             ],
-          ),
-        ),
-        BlocProvider(
-          create: (_) => DashatarPuzzleBloc(
-            secondsToBegin: 3,
-            ticker: const Ticker(),
-          ),
-        ),
-        BlocProvider(
-          create: (context) => ThemeBloc(
-            initialThemes: [
-              const SimpleTheme(),
-              context.read<DashatarThemeBloc>().state.theme,
-            ],
-          ),
-        ),
-        BlocProvider(
-          create: (_) => TimerBloc(
-            ticker: const Ticker(),
-          ),
-        ),
-        BlocProvider(
-          create: (_) => AudioControlBloc(),
-        ),
-      ],
-      child: const PuzzleView(),
+            child: const PuzzleView(),
+          );
+        } else {
+          return const CircularProgressIndicator();
+        }
+      },
     );
   }
 }
