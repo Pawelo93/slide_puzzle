@@ -100,7 +100,7 @@ class SkyPuzzleLayoutDelegate extends PuzzleLayoutDelegate {
   }
 
   @override
-  Widget tileBuilder(Tile tile, PuzzleState state) {
+  Widget tileBuilder(Tile tile, PuzzleState state, [GlobalKey? mainContainerKey]) {
     return SkyPuzzleTile(
       tile: tile,
       state: state,

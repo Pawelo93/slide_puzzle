@@ -15,9 +15,9 @@ import 'package:very_good_slide_puzzle/sky/sky_inside_tile.dart';
 import 'package:very_good_slide_puzzle/theme/themes/themes.dart';
 
 abstract class _TileSize {
-  static double small = 75;
+  static double small = 80;
   static double medium = 100;
-  static double large = 112;
+  static double large = 116;
 }
 
 /// {@template dashatar_puzzle_tile}
@@ -31,6 +31,7 @@ class SkyPuzzleTile extends StatefulWidget {
     required this.tile,
     required this.state,
     required this.resourceBundle,
+    // required this.mainContainerKey,
     AudioPlayerFactory? audioPlayer,
   })  : _audioPlayerFactory = audioPlayer ?? getAudioPlayer,
         super(key: key);
@@ -43,6 +44,7 @@ class SkyPuzzleTile extends StatefulWidget {
 
   final AudioPlayerFactory _audioPlayerFactory;
   final ResourceBundle resourceBundle;
+  // final GlobalKey mainContainerKey;
 
   @override
   State<SkyPuzzleTile> createState() => SkyPuzzleTileState();
@@ -59,6 +61,7 @@ class SkyPuzzleTileState extends State<SkyPuzzleTile>
   late AnimationController _controller;
   late Animation<double> _scale;
   final GlobalKey containerKey = GlobalKey();
+  final GlobalKey mainContainerKey = GlobalKey();
 
   @override
   void initState() {
@@ -103,77 +106,83 @@ class SkyPuzzleTileState extends State<SkyPuzzleTile>
 
     final movementDuration = status == DashatarPuzzleStatus.loading
         ? const Duration(milliseconds: 800)
-        : const Duration(milliseconds: 370);
+        : const Duration(milliseconds: 800);
 
     final canPress = hasStarted && puzzleIncomplete;
 
-    return AudioControlListener(
-      audioPlayer: _audioPlayer,
-      child: AnimatedAlign(
-        alignment: FractionalOffset(
-          (widget.tile.currentPosition.x - 1) / (size - 1),
-          (widget.tile.currentPosition.y - 1) / (size - 1),
-        ),
-        duration: movementDuration,
-        curve: Curves.easeInOut,
-        child: ResponsiveLayoutBuilder(
-          small: (_, child) => SizedBox.square(
-            key: Key('dashatar_puzzle_tile_small_${widget.tile.value}'),
-            dimension: _TileSize.small,
-            child: child,
+    return Container(
+      key: mainContainerKey,
+      child: AudioControlListener(
+        audioPlayer: _audioPlayer,
+        child: AnimatedAlign(
+          key: Key('dashatar_puzzle_tile_align_${widget.tile.value}'),
+          alignment: FractionalOffset(
+            (widget.tile.currentPosition.x - 1) / (size - 1),
+            (widget.tile.currentPosition.y - 1) / (size - 1),
           ),
-          medium: (_, child) => SizedBox.square(
-            key: Key('dashatar_puzzle_tile_medium_${widget.tile.value}'),
-            dimension: _TileSize.medium,
-            child: child,
-          ),
-          large: (_, child) => SizedBox.square(
-            key: Key('dashatar_puzzle_tile_large_${widget.tile.value}'),
-            dimension: _TileSize.large,
-            child: child,
-          ),
-          child: (currentSize) => MouseRegion(
-            onEnter: (_) {
-              if (canPress) {
-                _controller.forward();
-              }
-            },
-            onExit: (_) {
-              if (canPress) {
-                _controller.reverse();
-              }
-            },
-            child: ScaleTransition(
-              key: Key('dashatar_puzzle_tile_scale_${widget.tile.value}'),
-              scale: _scale,
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                onPressed: canPress
-                    ? () {
-                        context.read<PuzzleBloc>().add(TileTapped(widget.tile));
-                        unawaited(_audioPlayer?.replay());
-                      }
-                    : null,
-                icon: Container(
-                  key: containerKey,
-                  padding: const EdgeInsets.all(2),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: SkyInsideTile(
-                      globalKey: containerKey,
-                      background: widget.resourceBundle.background,
-                      child: Center(
-                        child: Text(
-                          widget.tile.value.toString(),
-                          semanticsLabel: context.l10n.puzzleTileLabelText(
+          duration: movementDuration,
+          curve: Curves.easeInOut,
+          child: ResponsiveLayoutBuilder(
+            small: (_, child) => SizedBox.square(
+              key: Key('dashatar_puzzle_tile_small_${widget.tile.value}'),
+              dimension: _TileSize.small,
+              child: child,
+            ),
+            medium: (_, child) => SizedBox.square(
+              key: Key('dashatar_puzzle_tile_medium_${widget.tile.value}'),
+              dimension: _TileSize.medium,
+              child: child,
+            ),
+            large: (_, child) => SizedBox.square(
+              key: Key('dashatar_puzzle_tile_large_${widget.tile.value}'),
+              dimension: _TileSize.large,
+              child: child,
+            ),
+            child: (currentSize) => MouseRegion(
+              onEnter: (_) {
+                if (canPress) {
+                  _controller.forward();
+                }
+              },
+              onExit: (_) {
+                if (canPress) {
+                  _controller.reverse();
+                }
+              },
+              child: ScaleTransition(
+                key: Key('dashatar_puzzle_tile_scale_${widget.tile.value}'),
+                scale: _scale,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: canPress
+                      ? () {
+                          context.read<PuzzleBloc>().add(TileTapped(widget.tile));
+                          unawaited(_audioPlayer?.replay());
+                        }
+                      : null,
+                  icon: Container(
+                    key: containerKey,
+                    padding: const EdgeInsets.all(2),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: SkyInsideTile(
+                        globalKey: containerKey,
+                        mainContainerKey: mainContainerKey,
+                        resourceBundle: widget.resourceBundle,
+                        correctPosition: widget.tile.correctPosition,
+                        child: Center(
+                          child: Text(
                             widget.tile.value.toString(),
-                            widget.tile.currentPosition.x.toString(),
-                            widget.tile.currentPosition.y.toString(),
-                          ),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
+                            semanticsLabel: context.l10n.puzzleTileLabelText(
+                              widget.tile.value.toString(),
+                              widget.tile.currentPosition.x.toString(),
+                              widget.tile.currentPosition.y.toString(),
+                            ),
+                            style: const TextStyle(
+                              color: Color(0x37E5E5E5),
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),

@@ -105,7 +105,7 @@ class DashatarPuzzleLayoutDelegate extends PuzzleLayoutDelegate {
   }
 
   @override
-  Widget tileBuilder(Tile tile, PuzzleState state) {
+  Widget tileBuilder(Tile tile, PuzzleState state, [GlobalKey? mainContainerKey]) {
     return DashatarPuzzleTile(
       tile: tile,
       state: state,

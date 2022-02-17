@@ -23,6 +23,7 @@ dependencies:
   universal_platform: ^1.0.0+1
   url_launcher: ^6.0.17
   widget_mask: ^1.0.0
+  image: ^3.1.1
 
 dev_dependencies:
   bloc_test: ^9.0.1
@@ -36,6 +37,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/sky/
     - assets/audio/
     - assets/images/
     - assets/images/audio_control/

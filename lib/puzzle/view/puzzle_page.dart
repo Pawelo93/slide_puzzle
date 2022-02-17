@@ -29,48 +29,55 @@ class PuzzlePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<ui.Image>>(
-      future: Future.wait([loadImage('assets/background.png')]),
+      future: Future.wait([
+        loadImage('assets/sky/background_details.png'),
+        loadImage('assets/sky/foreground_details.png'),
+        loadImage('assets/sky/static_background.png'),
+        loadImage('assets/sky/static_foreground.png'),
+      ]),
       builder: (context, data) {
+        // print('DATA $data');
         if (data.hasData) {
-          final background = data.data![0];
-          final resourceBundle = ResourceBundle(background);
+          final backgroundDetails = data.data![0];
+          final foregroundDetails = data.data![1];
+          final staticBackground = data.data![2];
+          final staticForeground = data.data![3];
+          final resourceBundle = ResourceBundle(
+            backgroundDetails,
+            foregroundDetails,
+            staticBackground,
+            staticForeground,
+          );
           return MultiBlocProvider(
             providers: [
               BlocProvider(
-                create: (_) =>
-                    DashatarThemeBloc(
-                      themes: const [
-                        BlueDashatarTheme(),
-                        GreenDashatarTheme(),
-                        YellowDashatarTheme()
-                      ],
-                    ),
+                create: (_) => DashatarThemeBloc(
+                  themes: const [
+                    BlueDashatarTheme(),
+                    GreenDashatarTheme(),
+                    YellowDashatarTheme()
+                  ],
+                ),
               ),
               BlocProvider(
-                create: (_) =>
-                    DashatarPuzzleBloc(
-                      secondsToBegin: 3,
-                      ticker: const Ticker(),
-                    ),
+                create: (_) => DashatarPuzzleBloc(
+                  secondsToBegin: 3,
+                  ticker: const Ticker(),
+                ),
               ),
               BlocProvider(
-                create: (context) =>
-                    ThemeBloc(
-                      initialThemes: [
-                        SkyTheme(resourceBundle),
-                        const SimpleTheme(),
-                        context
-                            .read<DashatarThemeBloc>()
-                            .state
-                            .theme,
-                      ],
-                    ),
+                create: (context) => ThemeBloc(
+                  initialThemes: [
+                    SkyTheme(resourceBundle),
+                    const SimpleTheme(),
+                    context.read<DashatarThemeBloc>().state.theme,
+                  ],
+                ),
               ),
               BlocProvider(
-                create: (_) =>
-                    TimerBloc(
-                      ticker: const Ticker(),
-                    ),
+                create: (_) => TimerBloc(
+                  ticker: const Ticker(),
+                ),
               ),
               BlocProvider(
                 create: (_) => AudioControlBloc(),
@@ -330,7 +337,7 @@ class PuzzleBoard extends StatelessWidget {
 }
 
 class _PuzzleTile extends StatelessWidget {
-  const _PuzzleTile({
+  _PuzzleTile({
     Key? key,
     required this.tile,
   }) : super(key: key);
@@ -345,7 +352,10 @@ class _PuzzleTile extends StatelessWidget {
 
     return tile.isWhitespace
         ? theme.layoutDelegate.whitespaceTileBuilder()
-        : theme.layoutDelegate.tileBuilder(tile, state);
+        : theme.layoutDelegate.tileBuilder(
+          tile,
+          state,
+        );
   }
 }
 
