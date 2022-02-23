@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
-// import 'package:image/image.dart' as img;
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:very_good_slide_puzzle/extensions.dart';
 import 'package:very_good_slide_puzzle/models/position.dart';
 import 'package:very_good_slide_puzzle/sky/resource_bundle.dart';
@@ -16,6 +12,7 @@ class SkyInsideTile extends StatelessWidget {
     required this.resourceBundle,
     required this.mainContainerKey,
     required this.correctPosition,
+    required this.brightness,
     this.child,
   }) : super(key: key);
 
@@ -23,6 +20,7 @@ class SkyInsideTile extends StatelessWidget {
   final GlobalKey globalKey;
   final GlobalKey mainContainerKey;
   final Position correctPosition;
+  final double brightness;
   final Widget? child;
 
   @override
@@ -35,6 +33,7 @@ class SkyInsideTile extends StatelessWidget {
         globalKey: globalKey,
         mainContainerKey: mainContainerKey,
         correctPosition: correctPosition,
+        brightness: brightness,
       ),
       child: child,
     );
@@ -49,9 +48,11 @@ class ShapePainter extends CustomPainter {
     required this.globalKey,
     required this.mainContainerKey,
     required this.correctPosition,
+    required this.brightness,
   });
 
   final Paint _paint = Paint();
+  final Paint _riverPaint = Paint();
   final ResourceBundle resourceBundle;
 
   final double characterX;
@@ -59,13 +60,13 @@ class ShapePainter extends CustomPainter {
   final GlobalKey globalKey;
   final GlobalKey mainContainerKey;
   final Position correctPosition;
-  // Position? oldPosition;
+  final double brightness;
 
   @override
   void paint(Canvas canvas, Size size) {
     final Rect? bounds = globalKey.globalPaintBounds;
 
-    // print('background size ${resourceBundle.staticBackground.width}x${resourceBundle.staticBackground.height}');
+    _riverPaint.color = Color.fromARGB((brightness * 255).toInt(), 255, 255, 255);
 
     final topRight = mainContainerKey.globalPaintBounds?.topRight.dx ?? 0;
     final topDx = mainContainerKey.globalPaintBounds?.topLeft.dx ?? 0;
@@ -74,7 +75,7 @@ class ShapePainter extends CustomPainter {
     final tileWidth = size.width;
     final double spacing = ((topRight - topDx) - (4 * tileWidth)) / 3;
 
-    final maskSize = 1200 / 4 - (spacing * 3);
+    var maskSize = 1200 / 4 - (spacing * 3);
 
     final dx = (bounds?.topLeft.dx ?? 0) - topDx;
     double maskX;
@@ -91,9 +92,6 @@ class ShapePainter extends CustomPainter {
     } else {
       maskY = 0;
     }
-    // print('MASK X ${maskX}');
-
-    // print('HERE ### X ${dx} Y ${dy} TILE SIZE ${tileWidth} MASK X ${maskX} MASK Y ${maskY} MASK SIZE ${maskSize}');
 
     canvas.mask(
       resourceBundle.staticBackground,
@@ -141,11 +139,26 @@ class ShapePainter extends CustomPainter {
       width: size.width,
       height: size.height,
       maskX: (correctPosition.x - 1) * maskSize,
-      maskY: (correctPosition.y - 1) * maskSize,
-      maskWidth: maskSize,
-      maskHeight: maskSize,
+      maskY: (correctPosition.y - 1) * maskSize + 4 * spacing,
+      maskWidth: maskSize ,
+      maskHeight: maskSize + 4 * spacing,
       paint: _paint,
     );
+
+    canvas.mask(
+      resourceBundle.river,
+      x: 0,
+      y: 0,
+      width: size.width,
+      height: size.height,
+      maskX: maskX,
+      maskY: maskY,
+      maskWidth: maskSize,
+      maskHeight: maskSize,
+      paint: _riverPaint,
+    );
+
+
   }
 
   @override

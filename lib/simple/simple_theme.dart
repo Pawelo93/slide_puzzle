@@ -80,4 +80,11 @@ class SimpleTheme extends PuzzleTheme {
         menuInactiveColor,
         layoutDelegate,
       ];
+
+  @override
+  // TODO: implement countdownColor
+  Color get countdownColor => throw UnimplementedError();
+
+  @override
+  Color get licenseTextColor => throw UnimplementedError();
 }

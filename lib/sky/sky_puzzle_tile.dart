@@ -10,6 +10,8 @@ import 'package:very_good_slide_puzzle/l10n/l10n.dart';
 import 'package:very_good_slide_puzzle/layout/layout.dart';
 import 'package:very_good_slide_puzzle/models/models.dart';
 import 'package:very_good_slide_puzzle/puzzle/puzzle.dart';
+import 'package:very_good_slide_puzzle/sky/clouds_bloc.dart';
+import 'package:very_good_slide_puzzle/sky/clouds_widget.dart';
 import 'package:very_good_slide_puzzle/sky/resource_bundle.dart';
 import 'package:very_good_slide_puzzle/sky/sky_inside_tile.dart';
 import 'package:very_good_slide_puzzle/theme/themes/themes.dart';
@@ -44,6 +46,7 @@ class SkyPuzzleTile extends StatefulWidget {
 
   final AudioPlayerFactory _audioPlayerFactory;
   final ResourceBundle resourceBundle;
+
   // final GlobalKey mainContainerKey;
 
   @override
@@ -72,7 +75,7 @@ class SkyPuzzleTileState extends State<SkyPuzzleTile>
       duration: PuzzleThemeAnimationDuration.puzzleTileScale,
     );
 
-    _scale = Tween<double>(begin: 1, end: 0.94).animate(
+    _scale = Tween<double>(begin: 1, end: 0.96).animate(
       CurvedAnimation(
         parent: _controller,
         curve: const Interval(0, 1, curve: Curves.easeInOut),
@@ -105,8 +108,8 @@ class SkyPuzzleTileState extends State<SkyPuzzleTile>
             PuzzleStatus.incomplete;
 
     final movementDuration = status == DashatarPuzzleStatus.loading
-        ? const Duration(milliseconds: 800)
-        : const Duration(milliseconds: 800);
+        ? const Duration(milliseconds: 700)
+        : const Duration(milliseconds: 500);
 
     final canPress = hasStarted && puzzleIncomplete;
 
@@ -121,7 +124,7 @@ class SkyPuzzleTileState extends State<SkyPuzzleTile>
             (widget.tile.currentPosition.y - 1) / (size - 1),
           ),
           duration: movementDuration,
-          curve: Curves.easeInOut,
+          curve: Curves.easeInOutCubic,
           child: ResponsiveLayoutBuilder(
             small: (_, child) => SizedBox.square(
               key: Key('dashatar_puzzle_tile_small_${widget.tile.value}'),
@@ -156,7 +159,9 @@ class SkyPuzzleTileState extends State<SkyPuzzleTile>
                   padding: EdgeInsets.zero,
                   onPressed: canPress
                       ? () {
-                          context.read<PuzzleBloc>().add(TileTapped(widget.tile));
+                          context
+                              .read<PuzzleBloc>()
+                              .add(TileTapped(widget.tile));
                           unawaited(_audioPlayer?.replay());
                         }
                       : null,
@@ -165,23 +170,26 @@ class SkyPuzzleTileState extends State<SkyPuzzleTile>
                     padding: const EdgeInsets.all(2),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: SkyInsideTile(
-                        globalKey: containerKey,
-                        mainContainerKey: mainContainerKey,
-                        resourceBundle: widget.resourceBundle,
-                        correctPosition: widget.tile.correctPosition,
-                        child: Center(
-                          child: Text(
-                            widget.tile.value.toString(),
-                            semanticsLabel: context.l10n.puzzleTileLabelText(
+                      child: BlocBuilder<CloudsBloc, CloudsState>(
+                        builder: (context, state) => SkyInsideTile(
+                          globalKey: containerKey,
+                          mainContainerKey: mainContainerKey,
+                          resourceBundle: widget.resourceBundle,
+                          correctPosition: widget.tile.correctPosition,
+                          brightness: state.brightness,
+                          child: Center(
+                            child: Text(
                               widget.tile.value.toString(),
-                              widget.tile.currentPosition.x.toString(),
-                              widget.tile.currentPosition.y.toString(),
-                            ),
-                            style: const TextStyle(
-                              color: Color(0x37E5E5E5),
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
+                              semanticsLabel: context.l10n.puzzleTileLabelText(
+                                widget.tile.value.toString(),
+                                widget.tile.currentPosition.x.toString(),
+                                widget.tile.currentPosition.y.toString(),
+                              ),
+                              style: const TextStyle(
+                                color: Color(0x57DFDFE2),
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),

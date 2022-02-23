@@ -8,7 +8,7 @@ import 'package:very_good_slide_puzzle/theme/themes/puzzle_theme.dart';
 // ignore: public_member_api_docs
 class SkyTheme extends PuzzleTheme {
   /// {@macro simple_theme}
-  const SkyTheme(this.resourceBundle) : super();
+  SkyTheme(this.resourceBundle) : super();
 
   final ResourceBundle resourceBundle;
 
@@ -22,10 +22,10 @@ class SkyTheme extends PuzzleTheme {
   Color get nameColor => PuzzleColors.grey1;
 
   @override
-  Color get titleColor => PuzzleColors.primary1;
+  Color get titleColor => PuzzleColors.white;
 
   @override
-  Color get backgroundColor => PuzzleColors.white;
+  Color get backgroundColor => Colors.white;
 
   @override
   Color get defaultColor => PuzzleColors.primary5;
@@ -40,7 +40,7 @@ class SkyTheme extends PuzzleTheme {
   Color get pressedColor => PuzzleColors.primary7;
 
   @override
-  bool get isLogoColored => true;
+  bool get isLogoColored => false;
 
   @override
   Color get menuActiveColor => PuzzleColors.grey1;
@@ -80,4 +80,10 @@ class SkyTheme extends PuzzleTheme {
     menuInactiveColor,
     layoutDelegate,
   ];
+
+  @override
+  Color get countdownColor => PuzzleColors.primary2;
+
+  @override
+  Color get licenseTextColor => const Color(0x88FFFFFF);
 }

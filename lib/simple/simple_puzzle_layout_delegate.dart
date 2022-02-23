@@ -133,7 +133,7 @@ class SimplePuzzleLayoutDelegate extends PuzzleLayoutDelegate {
   }
 
   @override
-  Widget tileBuilder(Tile tile, PuzzleState state, [GlobalKey? mainContainerKey]) {
+  Widget tileBuilder(Tile tile, PuzzleState state) {
     return ResponsiveLayoutBuilder(
       small: (_, __) => SimplePuzzleTile(
         key: Key('simple_puzzle_tile_${tile.value}_small'),

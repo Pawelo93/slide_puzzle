@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:very_good_slide_puzzle/dashatar/dashatar.dart';
 import 'package:very_good_slide_puzzle/layout/layout.dart';
 import 'package:very_good_slide_puzzle/models/models.dart';
 import 'package:very_good_slide_puzzle/puzzle/puzzle.dart';
 import 'package:very_good_slide_puzzle/sky/resource_bundle.dart';
+import 'package:very_good_slide_puzzle/sky/sky_countdown.dart';
+import 'package:very_good_slide_puzzle/sky/sky_license_widget.dart';
+import 'package:very_good_slide_puzzle/sky/sky_puzzle_action_button.dart';
+import 'package:very_good_slide_puzzle/sky/sky_puzzle_board.dart';
 import 'package:very_good_slide_puzzle/sky/sky_puzzle_tile.dart';
+import 'package:very_good_slide_puzzle/sky/sky_start_section.dart';
+import 'package:very_good_slide_puzzle/sky/sky_timer.dart';
+import 'package:very_good_slide_puzzle/theme/bloc/theme_bloc.dart';
+import 'package:very_good_slide_puzzle/theme/themes/puzzle_theme.dart';
 
 /// {@template dashatar_puzzle_layout_delegate}
 /// A delegate for computing the layout of the puzzle UI
@@ -25,7 +32,7 @@ class SkyPuzzleLayoutDelegate extends PuzzleLayoutDelegate {
         padding: const EdgeInsets.only(left: 50, right: 32),
         child: child,
       ),
-      child: (_) => DashatarStartSection(state: state),
+      child: (_) => SkyStartSection(state: state),
     );
   }
 
@@ -39,8 +46,8 @@ class SkyPuzzleLayoutDelegate extends PuzzleLayoutDelegate {
           medium: 32,
         ),
         ResponsiveLayoutBuilder(
-          small: (_, child) => const DashatarPuzzleActionButton(),
-          medium: (_, child) => const DashatarPuzzleActionButton(),
+          small: (_, child) => const SkyPuzzleActionButton(),
+          medium: (_, child) => const SkyPuzzleActionButton(),
           large: (_, __) => const SizedBox(),
         ),
         const ResponsiveGap(
@@ -50,7 +57,7 @@ class SkyPuzzleLayoutDelegate extends PuzzleLayoutDelegate {
         const ResponsiveGap(
           large: 130,
         ),
-        const DashatarCountdown(),
+        const SkyCountdown(),
       ],
     );
   }
@@ -58,12 +65,13 @@ class SkyPuzzleLayoutDelegate extends PuzzleLayoutDelegate {
   @override
   Widget backgroundBuilder(PuzzleState state) {
     return Positioned(
-      bottom: 74,
-      right: 50,
+      bottom: 16,
+      right: 16,
       child: ResponsiveLayoutBuilder(
-        small: (_, child) => const SizedBox(),
-        medium: (_, child) => const SizedBox(),
-        large: (_, child) => const DashatarThemePicker(),
+        small: (_, child) => child!,
+        medium: (_, child) => child!,
+        large: (_, child) => child!,
+        child: (_) => const SkyLicenseWidget(),
       ),
     );
   }
@@ -79,7 +87,7 @@ class SkyPuzzleLayoutDelegate extends PuzzleLayoutDelegate {
           child: ResponsiveLayoutBuilder(
             small: (_, child) => const SizedBox(),
             medium: (_, child) => const SizedBox(),
-            large: (_, child) => const DashatarTimer(),
+            large: (_, child) => const SkyTimer(),
           ),
         ),
         Column(
@@ -89,7 +97,7 @@ class SkyPuzzleLayoutDelegate extends PuzzleLayoutDelegate {
               medium: 34,
               large: 96,
             ),
-            DashatarPuzzleBoard(tiles: tiles),
+            SkyPuzzleBoard(tiles: tiles),
             const ResponsiveGap(
               large: 96,
             ),
@@ -100,7 +108,7 @@ class SkyPuzzleLayoutDelegate extends PuzzleLayoutDelegate {
   }
 
   @override
-  Widget tileBuilder(Tile tile, PuzzleState state, [GlobalKey? mainContainerKey]) {
+  Widget tileBuilder(Tile tile, PuzzleState state) {
     return SkyPuzzleTile(
       tile: tile,
       state: state,

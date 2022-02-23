@@ -44,4 +44,7 @@ class BlueDashatarTheme extends DashatarTheme {
 
   @override
   String get dashAssetsDirectory => 'assets/images/dashatar/blue';
+
+  @override
+  Color get licenseTextColor => throw UnimplementedError();
 }
