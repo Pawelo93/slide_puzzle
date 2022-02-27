@@ -10,8 +10,6 @@ import 'package:very_good_slide_puzzle/sky/sky_puzzle_board.dart';
 import 'package:very_good_slide_puzzle/sky/sky_puzzle_tile.dart';
 import 'package:very_good_slide_puzzle/sky/sky_start_section.dart';
 import 'package:very_good_slide_puzzle/sky/sky_timer.dart';
-import 'package:very_good_slide_puzzle/theme/bloc/theme_bloc.dart';
-import 'package:very_good_slide_puzzle/theme/themes/puzzle_theme.dart';
 
 /// {@template dashatar_puzzle_layout_delegate}
 /// A delegate for computing the layout of the puzzle UI

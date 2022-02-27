@@ -165,20 +165,6 @@ class ShapePainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) {
     return true;
   }
-
-  // void drawImage(Canvas canvas, Rect rect) {
-  //   canvas.drawImageRect(
-  //     character,
-  //     Rect.fromLTWH(
-  //       0,
-  //       0,
-  //       character.width.toDouble(),
-  //       character.height.toDouble(),
-  //     ),
-  //     rect,
-  //     _paint,
-  //   );
-  // }
 }
 
 extension CanvasExt on Canvas {

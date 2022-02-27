@@ -71,44 +71,11 @@ class CloudsPainter extends CustomPainter {
         if (cloud.x > 0 && cloud.x < minDistance) {
           opacity = maxOpacity / (minDistance / cloud.x);
         } else if (cloud.x > maxDistance && cloud.x < minScreenWidth) {
-          // opacity = maxOpacity * ((screenWidth - cloud.x) / (screenWidth - maxDistance));
-
-          // var z = y / (cloud.x);
-
           opacity = maxOpacity * output;
-          // if (cloud.id == 1) {
-          //   print('output $output');
-          // }
-          // should be 0 when cloud.x == screenWidth
-          // should be 1 when clud.x == maxDistance
-          // should be 0.5 when cloud.x == (screenWidth - maxDistance) / 2
-
-          // x - screenWidth = 0
-          // x - maxDistance = 1
-          // x -
-
-          // screenWidth - X / Z
         } else {
           opacity = 0;
         }
       }
-
-      // if (cloud.x < maxDistance) {
-      //   opacity = maxOpacity;
-      // } else {
-      //
-      // }
-      // if (cloud.id == 1) {
-      //   print('z $z   output $output');
-
-        // print('AAA ${cloud.x}');
-        // print('SCREEN $screenWidth');
-        // print('TOP LEFT ${(bounds?.topLeft.dx ?? 0)}   cloud x ${cloud.x}');
-        // print('ID ${cloud.id} DISTANCE $distance');
-      // }
-      // if () {
-      //
-      // }
 
       _paint.color = Color.fromRGBO(0, 0, 0, opacity);
       canvas.drawImageRect(

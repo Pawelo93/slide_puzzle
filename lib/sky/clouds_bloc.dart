@@ -97,10 +97,10 @@ class Cloud extends Equatable {
     this.speed,
   );
 
-  final int id; // id from 1 to 6
+  final int id;
   double x;
   final double y;
-  final double speed; // random value between 0.1 - 0.5
+  final double speed;
 
   @override
   List<Object?> get props => [speed];

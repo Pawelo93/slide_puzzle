@@ -11,14 +11,13 @@ import 'package:very_good_slide_puzzle/layout/layout.dart';
 import 'package:very_good_slide_puzzle/models/models.dart';
 import 'package:very_good_slide_puzzle/puzzle/puzzle.dart';
 import 'package:very_good_slide_puzzle/sky/clouds_bloc.dart';
-import 'package:very_good_slide_puzzle/sky/clouds_widget.dart';
 import 'package:very_good_slide_puzzle/sky/resource_bundle.dart';
 import 'package:very_good_slide_puzzle/sky/sky_inside_tile.dart';
 import 'package:very_good_slide_puzzle/theme/themes/themes.dart';
 
 abstract class _TileSize {
-  static double small = 80;
-  static double medium = 100;
+  static double small = 77;
+  static double medium = 104;
   static double large = 116;
 }
 
@@ -33,7 +32,6 @@ class SkyPuzzleTile extends StatefulWidget {
     required this.tile,
     required this.state,
     required this.resourceBundle,
-    // required this.mainContainerKey,
     AudioPlayerFactory? audioPlayer,
   })  : _audioPlayerFactory = audioPlayer ?? getAudioPlayer,
         super(key: key);
@@ -46,8 +44,6 @@ class SkyPuzzleTile extends StatefulWidget {
 
   final AudioPlayerFactory _audioPlayerFactory;
   final ResourceBundle resourceBundle;
-
-  // final GlobalKey mainContainerKey;
 
   @override
   State<SkyPuzzleTile> createState() => SkyPuzzleTileState();
