@@ -7,6 +7,7 @@ import 'package:very_good_slide_puzzle/theme/theme.dart';
 /// Template for creating custom puzzle UI.
 /// {@endtemplate}
 abstract class PuzzleTheme extends Equatable {
+
   /// {@macro puzzle_theme}
   const PuzzleTheme();
 
@@ -82,4 +83,8 @@ abstract class PuzzleTheme extends Equatable {
   ///
   /// Used for building sections of the puzzle UI.
   PuzzleLayoutDelegate get layoutDelegate;
+
+  Color get countdownColor;
+
+  Color get licenseTextColor;
 }

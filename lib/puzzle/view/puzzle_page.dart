@@ -3,14 +3,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:very_good_slide_puzzle/audio_control/audio_control.dart';
 import 'package:very_good_slide_puzzle/dashatar/dashatar.dart';
+import 'package:very_good_slide_puzzle/helpers.dart';
 import 'package:very_good_slide_puzzle/l10n/l10n.dart';
 import 'package:very_good_slide_puzzle/layout/layout.dart';
 import 'package:very_good_slide_puzzle/models/models.dart';
 import 'package:very_good_slide_puzzle/puzzle/puzzle.dart';
 import 'package:very_good_slide_puzzle/simple/simple.dart';
+import 'package:very_good_slide_puzzle/sky/clouds_bloc.dart';
+import 'package:very_good_slide_puzzle/sky/clouds_widget.dart';
+import 'package:very_good_slide_puzzle/sky/resource_bundle.dart';
+import 'package:very_good_slide_puzzle/sky/sky_theme.dart';
 import 'package:very_good_slide_puzzle/theme/theme.dart';
 import 'package:very_good_slide_puzzle/timer/timer.dart';
 import 'package:very_good_slide_puzzle/typography/typography.dart';
+import 'dart:ui' as ui;
 
 /// {@template puzzle_page}
 /// The root page of the puzzle UI.
@@ -24,41 +30,73 @@ class PuzzlePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) => DashatarThemeBloc(
-            themes: const [
-              BlueDashatarTheme(),
-              GreenDashatarTheme(),
-              YellowDashatarTheme()
+    return FutureBuilder<List<ui.Image>>(
+      future: Future.wait([
+        loadImage('assets/sky/background_details.png'),
+        loadImage('assets/sky/foreground_details.png'),
+        loadImage('assets/sky/static_background.png'),
+        loadImage('assets/sky/static_foreground.png'),
+        loadImage('assets/sky/cloud1.png'),
+        loadImage('assets/sky/cloud2.png'),
+        loadImage('assets/sky/cloud3.png'),
+        loadImage('assets/sky/cloud4.png'),
+        loadImage('assets/sky/cloud5.png'),
+        loadImage('assets/sky/cloud6.png'),
+        loadImage('assets/sky/river.png'),
+      ]),
+      builder: (context, data) {
+        // print('DATA $data');
+        if (data.hasData) {
+          final backgroundDetails = data.data![0];
+          final foregroundDetails = data.data![1];
+          final staticBackground = data.data![2];
+          final staticForeground = data.data![3];
+          final cloud1 = data.data![4];
+          final cloud2 = data.data![5];
+          final cloud3 = data.data![6];
+          final cloud4 = data.data![7];
+          final cloud5 = data.data![8];
+          final cloud6 = data.data![9];
+          final river = data.data![10];
+          final resourceBundle = ResourceBundle(
+            backgroundDetails,
+            foregroundDetails,
+            staticBackground,
+            staticForeground,
+            [cloud1, cloud2, cloud3, cloud4, cloud5, cloud6],
+            river,
+          );
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (_) => DashatarPuzzleBloc(
+                  secondsToBegin: 3,
+                  ticker: const Ticker(),
+                ),
+              ),
+              BlocProvider(
+                create: (context) => ThemeBloc(
+                  initTheme: SkyTheme(resourceBundle),
+                  initialThemes: [
+                    SkyTheme(resourceBundle),
+                  ],
+                ),
+              ),
+              BlocProvider(
+                create: (_) => TimerBloc(
+                  ticker: const Ticker(),
+                ),
+              ),
+              BlocProvider(
+                create: (_) => AudioControlBloc(),
+              ),
             ],
-          ),
-        ),
-        BlocProvider(
-          create: (_) => DashatarPuzzleBloc(
-            secondsToBegin: 3,
-            ticker: const Ticker(),
-          ),
-        ),
-        BlocProvider(
-          create: (context) => ThemeBloc(
-            initialThemes: [
-              const SimpleTheme(),
-              context.read<DashatarThemeBloc>().state.theme,
-            ],
-          ),
-        ),
-        BlocProvider(
-          create: (_) => TimerBloc(
-            ticker: const Ticker(),
-          ),
-        ),
-        BlocProvider(
-          create: (_) => AudioControlBloc(),
-        ),
-      ],
-      child: const PuzzleView(),
+            child: PuzzleView(resourceBundle: resourceBundle),
+          );
+        } else {
+          return const PuzzleView(resourceBundle: null);
+        }
+      },
     );
   }
 }
@@ -68,52 +106,64 @@ class PuzzlePage extends StatelessWidget {
 /// {@endtemplate}
 class PuzzleView extends StatelessWidget {
   /// {@macro puzzle_view}
-  const PuzzleView({Key? key}) : super(key: key);
+  const PuzzleView({Key? key, this.resourceBundle}) : super(key: key);
+
+  final ResourceBundle? resourceBundle;
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.select((ThemeBloc bloc) => bloc.state.theme);
-
-    /// Shuffle only if the current theme is Simple.
-    final shufflePuzzle = theme is SimpleTheme;
-
     return Scaffold(
       body: AnimatedContainer(
         duration: PuzzleThemeAnimationDuration.backgroundColorChange,
-        decoration: BoxDecoration(color: theme.backgroundColor),
-        child: BlocListener<DashatarThemeBloc, DashatarThemeState>(
-          listener: (context, state) {
-            final dashatarTheme = context.read<DashatarThemeBloc>().state.theme;
-            context.read<ThemeBloc>().add(ThemeUpdated(theme: dashatarTheme));
-          },
-          child: MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (context) => TimerBloc(
-                  ticker: const Ticker(),
-                ),
-              ),
-              BlocProvider(
-                create: (context) => PuzzleBloc(4)
-                  ..add(
-                    PuzzleInitialized(
-                      shufflePuzzle: shufflePuzzle,
-                    ),
-                  ),
-              ),
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            radius: 1,
+            colors: [
+              // Color(0xffbd8b9b),
+              // Color(0xc4894d80),
+
+              Color(0x41b35f7f),
+              Color(0xb46b4264),
+
+              // Color(0xAAb35f7f),
+              // Color(0xAA6b4264),
             ],
-            child: const _Puzzle(
-              key: Key('puzzle_view_puzzle'),
-            ),
           ),
+          // color: theme.backgroundColor,
         ),
+        child: resourceBundle != null ? MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => TimerBloc(
+                ticker: const Ticker(),
+              ),
+            ),
+            BlocProvider(
+              create: (context) => PuzzleBloc(4)
+                ..add(
+                  PuzzleInitialized(
+                    shufflePuzzle: false,
+                  ),
+                ),
+            ),
+            BlocProvider(
+              create: (_) => CloudsBloc()..init(),
+            )
+          ],
+          child: _Puzzle(
+            key: Key('puzzle_view_puzzle'),
+            resourceBundle: resourceBundle!,
+          ),
+        ) : Center(child: const CircularProgressIndicator()),
       ),
     );
   }
 }
 
 class _Puzzle extends StatelessWidget {
-  const _Puzzle({Key? key}) : super(key: key);
+  const _Puzzle({Key? key, required this.resourceBundle}) : super(key: key);
+
+  final ResourceBundle resourceBundle;
 
   @override
   Widget build(BuildContext context) {
@@ -132,9 +182,9 @@ class _Puzzle extends StatelessWidget {
                   minHeight: constraints.maxHeight,
                 ),
                 child: Column(
-                  children: const [
-                    PuzzleHeader(),
-                    PuzzleSections(),
+                  children: [
+                    PuzzleHeader(resourceBundle: resourceBundle),
+                    PuzzleSections(resourceBundle: resourceBundle),
                   ],
                 ),
               ),
@@ -154,7 +204,10 @@ class _Puzzle extends StatelessWidget {
 @visibleForTesting
 class PuzzleHeader extends StatelessWidget {
   /// {@macro puzzle_header}
-  const PuzzleHeader({Key? key}) : super(key: key);
+  const PuzzleHeader({Key? key, required this.resourceBundle})
+      : super(key: key);
+
+  final ResourceBundle resourceBundle;
 
   @override
   Widget build(BuildContext context) {
@@ -163,8 +216,8 @@ class PuzzleHeader extends StatelessWidget {
       child: ResponsiveLayoutBuilder(
         small: (context, child) => Stack(
           children: [
-            const Align(
-              child: PuzzleLogo(),
+            Align(
+              child: PuzzleLogo(resourceBundle: resourceBundle),
             ),
             Align(
               alignment: Alignment.centerRight,
@@ -181,8 +234,8 @@ class PuzzleHeader extends StatelessWidget {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              PuzzleLogo(),
+            children: [
+              PuzzleLogo(resourceBundle: resourceBundle),
               PuzzleMenu(),
             ],
           ),
@@ -193,8 +246,8 @@ class PuzzleHeader extends StatelessWidget {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              PuzzleLogo(),
+            children: [
+              PuzzleLogo(resourceBundle: resourceBundle),
               PuzzleMenu(),
             ],
           ),
@@ -210,7 +263,9 @@ class PuzzleHeader extends StatelessWidget {
 @visibleForTesting
 class PuzzleLogo extends StatelessWidget {
   /// {@macro puzzle_logo}
-  const PuzzleLogo({Key? key}) : super(key: key);
+  const PuzzleLogo({Key? key, required this.resourceBundle}) : super(key: key);
+
+  final ResourceBundle resourceBundle;
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +283,10 @@ class PuzzleLogo extends StatelessWidget {
 /// {@endtemplate}
 class PuzzleSections extends StatelessWidget {
   /// {@macro puzzle_sections}
-  const PuzzleSections({Key? key}) : super(key: key);
+  const PuzzleSections({Key? key, required this.resourceBundle})
+      : super(key: key);
+
+  final ResourceBundle resourceBundle;
 
   @override
   Widget build(BuildContext context) {
@@ -240,14 +298,14 @@ class PuzzleSections extends StatelessWidget {
         children: [
           theme.layoutDelegate.startSectionBuilder(state),
           const PuzzleMenu(),
-          const PuzzleBoard(),
+          PuzzleBoard(resourceBundle: resourceBundle),
           theme.layoutDelegate.endSectionBuilder(state),
         ],
       ),
       medium: (context, child) => Column(
         children: [
           theme.layoutDelegate.startSectionBuilder(state),
-          const PuzzleBoard(),
+          PuzzleBoard(resourceBundle: resourceBundle),
           theme.layoutDelegate.endSectionBuilder(state),
         ],
       ),
@@ -257,7 +315,7 @@ class PuzzleSections extends StatelessWidget {
           Expanded(
             child: theme.layoutDelegate.startSectionBuilder(state),
           ),
-          const PuzzleBoard(),
+          PuzzleBoard(resourceBundle: resourceBundle),
           Expanded(
             child: theme.layoutDelegate.endSectionBuilder(state),
           ),
@@ -273,7 +331,13 @@ class PuzzleSections extends StatelessWidget {
 @visibleForTesting
 class PuzzleBoard extends StatelessWidget {
   /// {@macro puzzle_board}
-  const PuzzleBoard({Key? key}) : super(key: key);
+  PuzzleBoard({
+    Key? key,
+    required this.resourceBundle,
+  }) : super(key: key);
+
+  final GlobalKey cloudsScreenKey = GlobalKey(debugLabel: 'cloudsScreen');
+  final ResourceBundle resourceBundle;
 
   @override
   Widget build(BuildContext context) {
@@ -290,16 +354,40 @@ class PuzzleBoard extends StatelessWidget {
             context.read<TimerBloc>().add(const TimerStopped());
           }
         },
-        child: theme.layoutDelegate.boardBuilder(
-          size,
-          puzzle.tiles
-              .map(
-                (tile) => _PuzzleTile(
-                  key: Key('puzzle_tile_${tile.value.toString()}'),
-                  tile: tile,
+        child: Stack(
+          children: [
+            theme.layoutDelegate.boardBuilder(
+              size,
+              puzzle.tiles
+                  .map(
+                    (tile) => _PuzzleTile(
+                      key: Key('puzzle_tile_${tile.value.toString()}'),
+                      tile: tile,
+                    ),
+                  )
+                  .toList(),
+            ),
+            Positioned.fill(
+              key: cloudsScreenKey,
+              child: ClipRect(
+                child: Opacity(
+                  opacity: 1.0,
+                  child: IgnorePointer(
+                    child: BlocBuilder<CloudsBloc, CloudsState>(
+                      builder: (context, state) {
+                        return CloudsWidget(
+                          resourceBundle: resourceBundle,
+                          clouds: state.clouds,
+                          cloudsScreenKey: cloudsScreenKey,
+                          child: Container(),
+                        );
+                      },
+                    ),
+                  ),
                 ),
-              )
-              .toList(),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -307,7 +395,7 @@ class PuzzleBoard extends StatelessWidget {
 }
 
 class _PuzzleTile extends StatelessWidget {
-  const _PuzzleTile({
+  _PuzzleTile({
     Key? key,
     required this.tile,
   }) : super(key: key);
@@ -322,7 +410,10 @@ class _PuzzleTile extends StatelessWidget {
 
     return tile.isWhitespace
         ? theme.layoutDelegate.whitespaceTileBuilder()
-        : theme.layoutDelegate.tileBuilder(tile, state);
+        : theme.layoutDelegate.tileBuilder(
+            tile,
+            state,
+          );
   }
 }
 
@@ -336,18 +427,9 @@ class PuzzleMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themes = context.select((ThemeBloc bloc) => bloc.state.themes);
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ...List.generate(
-          themes.length,
-          (index) => PuzzleMenuItem(
-            theme: themes[index],
-            themeIndex: index,
-          ),
-        ),
         ResponsiveLayoutBuilder(
           small: (_, child) => const SizedBox(),
           medium: (_, child) => child!,

@@ -6,7 +6,7 @@ abstract class PuzzleThemeAnimationDuration {
 
   /// The duration of a background color change animation.
   /// The animation may happen when a theme is changed.
-  static const backgroundColorChange = Duration(milliseconds: 530);
+  static const backgroundColorChange = Duration(milliseconds: 5300);
 
   /// The duration of a logo change animation.
   /// The animation may happen when a theme is changed.
