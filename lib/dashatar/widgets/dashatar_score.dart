@@ -5,6 +5,7 @@ import 'package:very_good_slide_puzzle/dashatar/dashatar.dart';
 import 'package:very_good_slide_puzzle/l10n/l10n.dart';
 import 'package:very_good_slide_puzzle/layout/layout.dart';
 import 'package:very_good_slide_puzzle/puzzle/puzzle.dart';
+import 'package:very_good_slide_puzzle/theme/bloc/theme_bloc.dart';
 import 'package:very_good_slide_puzzle/theme/themes/themes.dart';
 import 'package:very_good_slide_puzzle/theme/widgets/widgets.dart';
 import 'package:very_good_slide_puzzle/typography/typography.dart';
@@ -22,7 +23,7 @@ class DashatarScore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.select((DashatarThemeBloc bloc) => bloc.state.theme);
+    final theme = context.select((ThemeBloc bloc) => bloc.state.theme);
     final state = context.watch<PuzzleBloc>().state;
     final l10n = context.l10n;
 
@@ -74,14 +75,6 @@ class DashatarScore extends StatelessWidget {
             color: theme.backgroundColor,
             child: Stack(
               children: [
-                Positioned(
-                  left: imageOffset.dx,
-                  top: imageOffset.dy,
-                  child: Image.asset(
-                    theme.successThemeAsset,
-                    height: imageHeight,
-                  ),
-                ),
                 Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(

@@ -7,6 +7,7 @@ import 'package:very_good_slide_puzzle/dashatar/dashatar.dart';
 import 'package:very_good_slide_puzzle/helpers/helpers.dart';
 import 'package:very_good_slide_puzzle/layout/layout.dart';
 import 'package:very_good_slide_puzzle/puzzle/puzzle.dart';
+import 'package:very_good_slide_puzzle/theme/bloc/theme_bloc.dart';
 import 'package:very_good_slide_puzzle/timer/timer.dart';
 
 abstract class _BoardSize {
@@ -53,7 +54,7 @@ class _SkyPuzzleBoardState extends State<SkyPuzzleBoard> {
               child: MultiBlocProvider(
                 providers: [
                   BlocProvider.value(
-                    value: context.read<DashatarThemeBloc>(),
+                    value: context.read<ThemeBloc>(),
                   ),
                   BlocProvider.value(
                     value: context.read<PuzzleBloc>(),
